@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS banners (
   cta_link TEXT DEFAULT '#groceries-heading',
   cta_sec_text TEXT,
   cta_sec_cat TEXT,
-  badge_icon TEXT DEFAULT '⚡',
+  badge_icon TEXT DEFAULT '⚡', 
   badge_title TEXT,
   badge_code TEXT,
   bg_gradient TEXT,
