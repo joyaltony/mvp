@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restock Club | Premium Farm-Fresh Organic Groceries Delivered</title>
+  <meta name="description" content="Order 100% certified organic fruits, crisp farm vegetables, dairy, artisan sourdough, and pantry essentials delivered fresh in 20 minutes.">
+  <meta name="keywords" content="grocery, organic food, fresh vegetables, grocery delivery, supermarket, fresh fruits">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+
+  <!-- 1. Top Announcement Bar -->
+  <aside class="announcement-bar">
+    <span class="badge-promo">⚡ Limited Offer</span>
+    <span>Use code <strong class="highlight">FRESH20</strong> for 20% off your entire order + Free delivery on orders over $35!</span>
+  </aside>
+
+  <!-- 2. Sticky Header -->
+  <header class="header-sticky">
+    <div class="container">
+      <div class="header-main">
+        
+        <!-- Logo -->
+        <a href="#" class="brand-logo" title="Restock Club Home">
+          <img src="assets/logo.jpg" alt="Restock Club" class="brand-logo-img">
+        </a>
+
+        <!-- Location Dropdown -->
+        <div class="location-selector" title="Select Delivery Address">
+          <span class="loc-pin">📍</span>
+          <div class="loc-text">
+            <span class="loc-label">Delivering to</span>
+            <span class="loc-address">742 Evergreen Terrace (20 min) ▾</span>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-wrapper">
+          <div class="search-input-group">
+            <span class="search-icon">🔍</span>
+            <input 
+              type="text" 
+              id="searchInput" 
+              class="search-input" 
+              placeholder="Search organic avocados, farm milk, fresh berries..." 
+              autocomplete="off"
+            />
+            <button id="searchClearBtn" class="search-clear-btn" title="Clear search">✕</button>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="header-actions">
+          <!-- Theme Toggle -->
+          <button id="themeToggleBtn" class="btn-icon" onclick="toggleTheme()" title="Switch Light/Dark Mode">
+            🌙
+          </button>
+
+          <!-- Wishlist Button -->
+          <button class="btn-icon" onclick="setTag('deals'); showToast('Showing top deals & favorites!', '⭐')" title="View Favorites">
+            🤍
+            <span id="headerFavCount" class="badge-count">0</span>
+          </button>
+
+          <!-- Cart Drawer Button -->
+          <button class="btn-cart" onclick="openCartDrawer()" title="View Shopping Cart">
+            <span>🛒</span>
+            <span class="cart-label">Cart</span>
+            <span id="headerCartCount" class="badge-count">0</span>
+            <span id="headerCartTotal" class="cart-total-pill">$0.00</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Category Filter Tabs Bar -->
+      <nav class="categories-nav" id="categoriesNav" aria-label="Grocery categories">
+        <button class="category-tab active" data-category="all" onclick="setCategory('all')">
+          <span class="tab-icon">✨</span> All
+        </button>
+        <button class="category-tab" data-category="vegetables" onclick="setCategory('vegetables')">
+          <span class="tab-icon">🥦</span> Vegetables
+        </button>
+        <button class="category-tab" data-category="grocery" onclick="setCategory('grocery')">
+          <span class="tab-icon">🛒</span> Grocery
+        </button>
+        <button class="category-tab" data-category="fruits" onclick="setCategory('fruits')">
+          <span class="tab-icon">🍎</span> Fruits
+        </button>
+        <button class="category-tab" data-category="dairy" onclick="setCategory('dairy')">
+          <span class="tab-icon">🥛</span> Dairy &amp; Eggs
+        </button>
+        <button class="category-tab" data-category="bakery" onclick="setCategory('bakery')">
+          <span class="tab-icon">🥖</span> Bakery
+        </button>
+        <button class="category-tab" data-category="beverages" onclick="setCategory('beverages')">
+          <span class="tab-icon">🥤</span> Beverages
+        </button>
+        <button class="category-tab" data-category="snacks" onclick="setCategory('snacks')">
+          <span class="tab-icon">🍿</span> Snacks
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 3. Main Content Container -->
+  <main class="container">
+
+    <!-- Hero Banner Section / Automated Carousel -->
+    <section class="hero-section" id="heroSection">
+      <div class="hero-carousel-wrap" id="heroCarouselWrap">
+        <!-- Slides Track rendered dynamically by app.js -->
+        <div class="hero-slides-track" id="heroSlidesTrack">
+          <!-- Fallback initial slide before JS loads -->
+          <div class="hero-slide active" style="background: linear-gradient(135deg, #064e3b 0%, #065f46 45%, #047857 100%);">
+            <div class="hero-content">
+              <div class="hero-pill"><span>🌿</span> 100% Farm To Doorstep</div>
+              <h1 class="hero-title">Crisp, Organic Groceries <span>Delivered in 20 Mins</span></h1>
+              <p class="hero-subtitle">Directly from certified local organic family farms. Always picked at the peak of flavor, pesticide-free, and guaranteed fresh.</p>
+              <div class="hero-cta-group">
+                <a href="#groceries-heading" class="btn-hero-primary"><span>🛒</span> Shop Today's Harvest</a>
+                <button class="btn-hero-secondary" onclick="setCategory('fruits')">Explore Fresh Fruits</button>
+              </div>
+            </div>
+            <div class="hero-image-wrap">
+              <img src="assets/hero_banner.jpg" alt="Vibrant fresh organic groceries" class="hero-image" />
+              <div class="hero-floating-badge">
+                <div class="floating-badge-icon">⚡</div>
+                <div class="floating-badge-text">
+                  <h4>Flash 20% OFF</h4>
+                  <p>Code: <strong>FRESH20</strong></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carousel Navigation Arrows -->
+        <button class="carousel-btn prev" onclick="prevHeroSlide()" aria-label="Previous Slide">‹</button>
+        <button class="carousel-btn next" onclick="nextHeroSlide()" aria-label="Next Slide">›</button>
+
+        <!-- Carousel Indicators / Dots -->
+        <div class="carousel-dots-wrap" id="heroCarouselDots"></div>
+      </div>
+
+      <!-- Value Props Strip -->
+      <div class="features-strip">
+        <div class="feature-item">
+          <div class="feature-icon-box">⚡</div>
+          <div>
+            <h3 class="feature-title">20-Min Express Delivery</h3>
+            <p class="feature-sub">Super-fast local couriers</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon-box">🌱</div>
+          <div>
+            <h3 class="feature-title">100% Certified Organic</h3>
+            <p class="feature-sub">Zero synthetic pesticides</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon-box">🛡️</div>
+          <div>
+            <h3 class="feature-title">Freshness Guarantee</h3>
+            <p class="feature-sub">100% refund if not satisfied</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon-box">🎁</div>
+          <div>
+            <h3 class="feature-title">Free Delivery over $35</h3>
+            <p class="feature-sub">Automatically applied</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Controls Bar (Dietary Tags & Sort) -->
+    <section class="controls-section" id="groceries-heading">
+      <div class="dietary-tags-list">
+        <button class="tag-filter-btn active" data-tag="all" onclick="setTag('all')">All Items</button>
+        <button class="tag-filter-btn" data-tag="organic" onclick="setTag('organic')">🌿 100% Organic</button>
+        <button class="tag-filter-btn" data-tag="vegan" onclick="setTag('vegan')">🌱 Plant-Based</button>
+        <button class="tag-filter-btn" data-tag="gluten-free" onclick="setTag('gluten-free')">🌾 Gluten-Free</button>
+        <button class="tag-filter-btn" data-tag="deals" onclick="setTag('deals')">🔥 Hot Deals</button>
+      </div>
+
+      <div class="controls-right">
+        <div class="sort-select-wrap">
+          <span>Sort:</span>
+          <select id="sortSelect" class="sort-select" aria-label="Sort products">
+            <option value="featured">Featured Picks</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="rating">Highest Rated</option>
+            <option value="popular">Most Popular</option>
+          </select>
+        </div>
+        <div id="itemsCount" class="items-counter">
+          Showing <strong>16</strong> items
+        </div>
+      </div>
+    </section>
+
+    <!-- Product Grid -->
+    <section class="products-section">
+      <div id="productsGrid" class="products-grid">
+        <!-- Rendered by app.js -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 4. Slide-Over Cart Drawer -->
+  <div id="drawerBackdrop" class="drawer-backdrop" onclick="closeCartDrawer()"></div>
+  <aside id="cartDrawer" class="cart-drawer" aria-label="Shopping Cart">
+    
+    <div class="drawer-header">
+      <div class="drawer-title-group">
+        <h3 class="drawer-title">Shopping Basket</h3>
+        <span id="drawerHeaderCount" class="drawer-badge">0 items</span>
+      </div>
+      <button class="btn-drawer-close" onclick="closeCartDrawer()" title="Close Cart">✕</button>
+    </div>
+
+    <!-- Free Delivery Progress Meter -->
+    <div class="shipping-meter-wrap">
+      <div class="meter-text" id="shippingMeterText">
+        Add <strong>$35.00</strong> more for <strong>FREE Delivery</strong>
+      </div>
+      <div class="meter-bar-bg">
+        <div id="shippingMeterFill" class="meter-bar-fill" style="width: 0%;"></div>
+      </div>
+    </div>
+
+    <!-- Cart Items Scroll List -->
+    <div id="cartItemsList" class="cart-items-list">
+      <!-- Injected by app.js -->
+    </div>
+
+    <!-- Drawer Footer & Checkout -->
+    <div class="drawer-footer">
+      <!-- Promo code field -->
+      <div class="coupon-box">
+        <input type="text" id="couponInput" class="coupon-input" placeholder="Promo code (e.g. FRESH20)" />
+        <button class="btn-apply-coupon" onclick="applyCoupon()">Apply</button>
+      </div>
+      <div id="couponFeedback" class="coupon-feedback"></div>
+
+      <!-- Pricing Summary Breakdown -->
+      <div class="order-summary-rows">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="cartSubtotal">$0.00</span>
+        </div>
+        <div class="summary-row">
+          <span>Delivery</span>
+          <span id="cartShipping">$3.99</span>
+        </div>
+        <div class="summary-row discount-row" id="discountRow" style="display: none;">
+          <span>Promo Discount</span>
+          <span id="cartDiscount">-$0.00</span>
+        </div>
+        <div class="summary-row total-row">
+          <span>Estimated Total</span>
+          <span id="cartTotal">$0.00</span>
+        </div>
+      </div>
+
+      <button id="proceedToCheckoutBtn" class="btn-checkout" onclick="openCheckoutModal()" disabled>
+        Proceed to Checkout →
+      </button>
+    </div>
+  </aside>
+
+  <!-- 5. Unified Modal Backdrop & Modals -->
+  <div id="modalBackdrop" class="modal-backdrop" onclick="closeAllModals()">
+    <!-- Quick View Modal Container -->
+    <div id="quickViewModal" class="modal-container" style="display: none;" onclick="event.stopPropagation()">
+      <!-- Injected by app.js -->
+    </div>
+
+    <!-- Checkout Modal Container -->
+    <div id="checkoutModal" class="modal-container" style="display: none;" onclick="event.stopPropagation()">
+      <!-- Injected by app.js -->
+    </div>
+
+    <!-- Order Success Modal Container -->
+    <div id="successModal" class="modal-container" style="display: none;" onclick="event.stopPropagation()">
+      <!-- Injected by app.js -->
+    </div>
+  </div>
+
+  <!-- 6. Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- 7. Footer -->
+  <footer class="footer-main">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand-logo">
+            <img src="assets/logo.jpg" alt="Restock Club" class="brand-logo-img">
+          </div>
+          <p>
+            Your neighborhood farm-to-doorstep grocery store. We bring organic, non-GMO, and artisan food from local growers straight to your kitchen in 20 minutes.
+          </p>
+          <div style="font-size: 0.85rem; color: var(--text-muted);">
+            📞 24/7 Support: <strong>+1 (800) 555-FARM</strong>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Categories</h4>
+          <ul class="footer-links" id="footerCategoriesList">
+            <li><a href="javascript:void(0)" onclick="setCategory('vegetables')">Fresh Farm Vegetables</a></li>
+            <li><a href="javascript:void(0)" onclick="setCategory('grocery')">Grocery &amp; Staples</a></li>
+            <li><a href="javascript:void(0)" onclick="setCategory('fruits')">Fresh Organic Fruits</a></li>
+            <li><a href="javascript:void(0)" onclick="setCategory('dairy')">Dairy, Cheese &amp; Eggs</a></li>
+            <li><a href="javascript:void(0)" onclick="setCategory('bakery')">Artisan Fresh Breads</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul class="footer-links">
+            <li><a href="#">About Our Farms</a></li>
+            <li><a href="#">Sustainability Pledge</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Press & News</a></li>
+            <li><a href="#">Privacy & Terms</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Join Restock Club</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+            Subscribe to receive weekly seasonal produce updates and an instant $10 voucher.
+          </p>
+          <form class="newsletter-form" onsubmit="event.preventDefault(); showToast('Subscribed! Check your inbox for $10 voucher.', '🎁'); this.reset();">
+            <input type="email" class="newsletter-input" required placeholder="Enter your email..." />
+            <button type="submit" class="btn-newsletter">Join</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 Restock Club Inc. All rights reserved. 100% Organic & Non-GMO.</div>
+        <div style="display: flex; gap: 1rem;">
+          <span>🔒 256-bit Secure Encryption</span>
+          <span>⚡ Carbon Neutral Delivery</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="supabase-client.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
