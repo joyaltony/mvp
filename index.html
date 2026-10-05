@@ -16,133 +16,75 @@
 <body>
 
 
-  <!-- 2. Sticky Header -->
-  <header class="header-sticky">
-    <div class="container">
-      <div class="header-main">
-        
-        <!-- Logo -->
-        <a href="#" class="brand-logo" title="Restock Club Home">
-          <img src="assets/logo.jpg" alt="Restock Club" class="brand-logo-img">
-        </a>
-
-        <!-- Location Dropdown -->
-        <div class="location-selector" title="Select Delivery Address">
-          <span class="loc-pin">📍</span>
-          <div class="loc-text">
-            <span class="loc-label">Delivering to</span>
-            <span class="loc-address">742 Evergreen Terrace (20 min) ▾</span>
+  <!-- 1. Blinkit-Style Signature Warm Header -->
+  <header class="blinkit-header" id="blinkitHeader">
+    <div class="header-container">
+      
+      <!-- Top Delivery Strip -->
+      <div class="delivery-strip">
+        <div class="delivery-info" onclick="openAddressModal()" title="Change Delivery Address">
+          <div class="delivery-time-row">
+            <span class="delivery-brand-label">Blinkit in</span>
+            <span class="delivery-time-val">17 minutes</span>
+            <span class="distance-pill">🏣 1.5 km away</span>
+          </div>
+          <div class="address-dropdown-row">
+            <span class="address-home-tag" id="currentAddressTag">HOME</span>
+            <span class="address-sub-text" id="currentAddressSub">- 4th floor, cyber view hostel</span>
+            <span class="address-chevron">▾</span>
           </div>
         </div>
 
-        <!-- Search Bar -->
-        <div class="search-wrapper">
-          <div class="search-input-group">
-            <span class="search-icon">🔍</span>
-            <input 
-              type="text" 
-              id="searchInput" 
-              class="search-input" 
-              placeholder="Search organic avocados, farm milk, fresh berries..." 
-              autocomplete="off"
-            />
-            <button id="searchClearBtn" class="search-clear-btn" title="Clear search">✕</button>
-          </div>
+        <div class="header-right-tools">
+          <!-- Wallet Balance Pill -->
+          <button class="wallet-pill" onclick="showToast('Restock Wallet Balance: ₹0', '👛')" title="Restock Wallet">
+            <span class="wallet-icon">👛</span>
+            <span class="wallet-val">₹0</span>
+          </button>
+
+          <!-- User Profile / Admin Link -->
+          <a href="admin.html" class="profile-avatar-btn" title="Admin Console">
+            <span class="profile-avatar-icon">👤</span>
+          </a>
         </div>
-
-        <!-- Actions -->
-        <div class="header-actions">
-          <!-- Theme Toggle -->
-          <button id="themeToggleBtn" class="btn-icon" onclick="toggleTheme()" title="Switch Light/Dark Mode">
-            🌙
-          </button>
-
-          <!-- Wishlist Button -->
-          <button class="btn-icon" onclick="setTag('deals'); showToast('Showing top deals & favorites!', '⭐')" title="View Favorites">
-            🤍
-            <span id="headerFavCount" class="badge-count">0</span>
-          </button>
-
-          <!-- Cart Drawer Button -->
-          <button class="btn-cart" onclick="openCartDrawer()" title="View Shopping Cart">
-            <span>🛒</span>
-            <span class="cart-label">Cart</span>
-            <span id="headerCartCount" class="badge-count">0</span>
-            <span id="headerCartTotal" class="cart-total-pill">$0.00</span>
-          </button>
-        </div>
-
       </div>
 
-      <!-- Category Filter Tabs Bar -->
-      <nav class="categories-nav" id="categoriesNav" aria-label="Grocery categories">
-        <button class="category-tab active" data-category="all" onclick="setCategory('all')">
-          <span class="tab-icon">✨</span> All
-        </button>
-        <button class="category-tab" data-category="vegetables" onclick="setCategory('vegetables')">
-          <span class="tab-icon">🥦</span> Vegetables
-        </button>
-        <button class="category-tab" data-category="grocery" onclick="setCategory('grocery')">
-          <span class="tab-icon">🛒</span> Grocery
-        </button>
-        <button class="category-tab" data-category="fruits" onclick="setCategory('fruits')">
-          <span class="tab-icon">🍎</span> Fruits
-        </button>
-        <button class="category-tab" data-category="dairy" onclick="setCategory('dairy')">
-          <span class="tab-icon">🥛</span> Dairy &amp; Eggs
-        </button>
-        <button class="category-tab" data-category="bakery" onclick="setCategory('bakery')">
-          <span class="tab-icon">🥖</span> Bakery
-        </button>
-        <button class="category-tab" data-category="beverages" onclick="setCategory('beverages')">
-          <span class="tab-icon">🥤</span> Beverages
-        </button>
-        <button class="category-tab" data-category="snacks" onclick="setCategory('snacks')">
-          <span class="tab-icon">🍿</span> Snacks
-        </button>
+      <!-- Search Bar with Animated Rotating Placeholder & Mic -->
+      <div class="search-pill-wrap">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-pill-input" 
+          placeholder='Search "wedding props"' 
+          autocomplete="off"
+        />
+        <button id="searchClearBtn" class="search-clear-btn" style="display:none;" title="Clear search">✕</button>
+        <button class="mic-btn" onclick="triggerVoiceSearch()" title="Voice Search">🎙️</button>
+      </div>
+
+      <!-- Horizontal Category Icons Strip with Active Indicator -->
+      <nav class="blinkit-cat-strip" id="categoriesNav" aria-label="Quick Categories">
+        <!-- Rendered dynamically by app.js -->
       </nav>
+
     </div>
   </header>
 
-  <!-- 3. Main Content Container -->
-  <main class="container">
+  <!-- 2. Main Content Container -->
+  <main class="container app-main-container">
 
-    <!-- Hero Banner Section / Automated Carousel -->
+    <!-- Hero Banner Carousel Section (Fixed Uniform Dimensions) -->
     <section class="hero-section" id="heroSection">
       <div class="hero-carousel-wrap" id="heroCarouselWrap">
-        <!-- Slides Track rendered dynamically by app.js -->
         <div class="hero-slides-track" id="heroSlidesTrack">
-          <!-- Fallback initial slide before JS loads -->
-          <div class="hero-slide active" style="background: linear-gradient(135deg, #064e3b 0%, #065f46 45%, #047857 100%);">
-            <div class="hero-content">
-              <div class="hero-pill"><span>🌿</span> 100% Farm To Doorstep</div>
-              <h1 class="hero-title">Crisp, Organic Groceries <span>Delivered in 20 Mins</span></h1>
-              <p class="hero-subtitle">Directly from certified local organic family farms. Always picked at the peak of flavor, pesticide-free, and guaranteed fresh.</p>
-              <div class="hero-cta-group">
-                <a href="#groceries-heading" class="btn-hero-primary"><span>🛒</span> Shop Today's Harvest</a>
-                <button class="btn-hero-secondary" onclick="setCategory('fruits')">Explore Fresh Fruits</button>
-              </div>
-            </div>
-            <div class="hero-image-wrap">
-              <img src="assets/hero_banner.jpg" alt="Vibrant fresh organic groceries" class="hero-image" />
-              <div class="hero-floating-badge">
-                <div class="floating-badge-icon">⚡</div>
-                <div class="floating-badge-text">
-                  <h4>Flash 20% OFF</h4>
-                  <p>Code: <strong>FRESH20</strong></p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <!-- Rendered dynamically by app.js -->
         </div>
-
-        <!-- Carousel Navigation Arrows -->
         <button class="carousel-btn prev" onclick="prevHeroSlide()" aria-label="Previous Slide">‹</button>
         <button class="carousel-btn next" onclick="nextHeroSlide()" aria-label="Next Slide">›</button>
-
-        <!-- Carousel Indicators / Dots -->
-        <div class="carousel-dots-wrap" id="heroCarouselDots"></div>
       </div>
+      <div class="carousel-dots-wrap" id="heroCarouselDots"></div>
+    </section>
 
       <!-- Value Props Strip -->
       <div class="features-strip">
@@ -170,12 +112,17 @@
         <div class="feature-item">
           <div class="feature-icon-box">🎁</div>
           <div>
-            <h3 class="feature-title">Free Delivery over $35</h3>
+            <h3 class="feature-title">Free Delivery over ₹199</h3>
             <p class="feature-sub">Automatically applied</p>
           </div>
         </div>
       </div>
-    </section>
+
+    <!-- Curated Section Heading (Matching Blinkit "Revel in the spirit of Navratri") -->
+    <div class="blinkit-section-header">
+      <h3 class="blinkit-heading-title" id="blinkitHeadingTitle">Revel in the spirit of Fresh Groceries</h3>
+      <p class="blinkit-heading-sub" id="blinkitHeadingSub">Get idols, puja flowers, fresh vegetables, seasonal fruits, and farm dairy</p>
+    </div>
 
     <!-- Controls Bar (Dietary Tags & Sort) -->
     <section class="controls-section" id="groceries-heading">
@@ -355,6 +302,129 @@
       </div>
     </div>
   </footer>
+
+  <!-- Floating Blinkit "View Cart" Capsule Bar -->
+  <aside class="floating-cart-bar" id="floatingCartBar" style="display: none;" onclick="openCartDrawer()" aria-label="View Shopping Cart">
+    <div class="cart-bar-left">
+      <div class="cart-bar-thumb-wrap" id="cartBarThumbWrap">
+        <img src="" alt="Cart preview" id="cartBarThumb" class="cart-bar-thumb" />
+      </div>
+      <div class="cart-bar-info">
+        <span class="cart-bar-title">View cart</span>
+        <span class="cart-bar-sub" id="cartBarSub">0 Items</span>
+      </div>
+    </div>
+    <div class="cart-bar-right">
+      <div class="cart-bar-arrow-circle">
+        <span class="cart-bar-arrow">›</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Bottom Blinkit-Style Navigation Dock -->
+  <nav class="bottom-app-nav" id="bottomAppNav" aria-label="App Navigation">
+    <button class="nav-tab active" id="navTabHome" onclick="switchNavTab('home')" title="Home">
+      <div class="nav-icon-wrap">
+        <svg class="nav-tab-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </div>
+      <span class="nav-label">Home</span>
+    </button>
+    
+    <button class="nav-tab" id="navTabCategories" onclick="scrollToCategories()" title="Categories">
+      <div class="nav-icon-wrap">
+        <svg class="nav-tab-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+          <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+          <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+          <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+        </svg>
+      </div>
+      <span class="nav-label">Categories</span>
+    </button>
+
+    <button class="nav-tab" id="navTabTopPicks" onclick="filterTopPicks()" title="Top picks">
+      <div class="nav-icon-wrap">
+        <svg class="nav-tab-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M9 12h6"></path>
+          <path d="M12 9v6"></path>
+        </svg>
+      </div>
+      <span class="nav-label">Top picks</span>
+    </button>
+  </nav>
+
+  <!-- Bottom Sheet: Address Selection Modal -->
+  <div id="addressModal" class="bottom-sheet-modal" style="display: none;" onclick="closeAddressModal()">
+    <div class="sheet-content" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <div>
+          <h3 class="sheet-title">Select Delivery Address</h3>
+          <p class="sheet-sub">Express delivery in 12–17 minutes to your doorstep</p>
+        </div>
+        <button class="btn-sheet-close" onclick="closeAddressModal()">✕</button>
+      </div>
+      <div class="address-options-list">
+        <div class="address-option active" id="addrOptHome" onclick="selectAddress('HOME', '4th floor, cyber view hostel')">
+          <div class="addr-icon-box">🏠</div>
+          <div class="addr-details">
+            <div class="addr-tag-row">
+              <strong>HOME</strong>
+              <span class="badge-addr-active">CURRENT</span>
+            </div>
+            <span class="addr-line">4th floor, cyber view hostel, HITEC City, Hyderabad</span>
+            <span class="addr-eta">⚡ 17 mins delivery</span>
+          </div>
+          <span class="addr-radio">●</span>
+        </div>
+
+        <div class="address-option" id="addrOptWork" onclick="selectAddress('WORK', 'Mindspace Tower 12B, 8th floor')">
+          <div class="addr-icon-box">🏢</div>
+          <div class="addr-details">
+            <div class="addr-tag-row">
+              <strong>WORK</strong>
+            </div>
+            <span class="addr-line">Mindspace Tech Park, Tower 12B, 8th floor, Madhapur</span>
+            <span class="addr-eta">⚡ 12 mins delivery</span>
+          </div>
+          <span class="addr-radio">○</span>
+        </div>
+
+        <div class="address-option" id="addrOptParents" onclick="selectAddress('PARENTS', 'Villa 42, Green Meadows')">
+          <div class="addr-icon-box">🏡</div>
+          <div class="addr-details">
+            <div class="addr-tag-row">
+              <strong>PARENTS</strong>
+            </div>
+            <span class="addr-line">Villa 42, Green Meadows, Jubilee Hills</span>
+            <span class="addr-eta">⚡ 22 mins delivery</span>
+          </div>
+          <span class="addr-radio">○</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Sheet: Order Again Modal -->
+  <div id="orderAgainModal" class="bottom-sheet-modal" style="display: none;" onclick="closeOrderAgainModal()">
+    <div class="sheet-content" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <div>
+          <h3 class="sheet-title">Order Again</h3>
+          <p class="sheet-sub">Your frequently ordered favorites</p>
+        </div>
+        <button class="btn-sheet-close" onclick="closeOrderAgainModal()">✕</button>
+      </div>
+      <div class="order-again-list" id="orderAgainList">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+    </div>
+  </div>
 
   <script src="supabase-client.js"></script>
   <script src="app.js"></script>

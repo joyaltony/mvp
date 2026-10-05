@@ -1,4 +1,4 @@
-/**
+a/**
  * Restock Club Groceries - Core Application Logic
  * Products, coupons & settings are synced from the Admin Panel (admin.html)
  * via localStorage keys: fh_admin_products | fh_admin_coupons | fh_admin_settings
@@ -20,55 +20,43 @@ let CATEGORIES = [...CATEGORIES_DEFAULT];
 const BANNERS_DEFAULT = [
   {
     id: 'banner-1',
-    title: 'Crisp, Organic Groceries',
-    highlight: 'Delivered in 20 Mins',
-    subtitle: 'Directly from certified local organic family farms. Always picked at the peak of flavor, pesticide-free, and guaranteed fresh.',
-    pill: '🌿 100% Farm To Doorstep',
-    image: 'assets/hero_banner.jpg',
-    cta_text: "🛒 Shop Today's Harvest",
+    title: 'THE DAILY SPREAD',
+    subtitle: '',
+    pill: 'House of bb',
+    starburst_text: 'Start your\nday @',
+    starburst_price: '₹19',
+    image: 'assets/daily_spread_promo.jpg',
+    cta_text: 'Shop now',
     cta_link: '#groceries-heading',
-    cta_sec_text: 'Explore Fresh Fruits',
-    cta_sec_cat: 'fruits',
-    badge_icon: '⚡',
-    badge_title: 'Flash 20% OFF',
-    badge_code: 'Code: FRESH20',
-    bg_gradient: 'linear-gradient(135deg, #064e3b 0%, #065f46 45%, #047857 100%)',
+    bg_gradient: '#FFDD33',
     sort_order: 1,
     active: true
   },
   {
     id: 'banner-2',
-    title: 'Handpicked Green Harvest',
-    highlight: 'Up to 25% Off',
-    subtitle: 'Sweet heirloom carrots, vine-ripened tomatoes, and crisp baby spinach washed and packed within hours of morning harvesting.',
-    pill: '🥦 Farm-Fresh Veggie Fest',
-    image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=900&q=80',
-    cta_text: '🥦 Browse Farm Veggies',
+    title: 'FARM FRESH HARVEST',
+    subtitle: '',
+    pill: '100% Organic',
+    starburst_text: 'Fresh\npicks @',
+    starburst_price: '₹29',
+    image: 'assets/farm_fresh_banner.jpg',
+    cta_text: 'Shop now',
     cta_link: '#groceries-heading',
-    cta_sec_text: 'Shop All Produce',
-    cta_sec_cat: 'vegetables',
-    badge_icon: '🥕',
-    badge_title: 'Veggie Special',
-    badge_code: 'Save 25% Today',
-    bg_gradient: 'linear-gradient(135deg, #0f3826 0%, #155e3e 50%, #10b981 100%)',
+    bg_gradient: '#D8F3DC',
     sort_order: 2,
     active: true
   },
   {
     id: 'banner-3',
-    title: 'Pure Himalayan Basmati & Cold-Pressed',
-    highlight: 'Artisan Oils',
-    subtitle: 'Stock your home with organic whole wheat flour, single-estate Greek olive oils, and mountain wildflower raw honey.',
-    pill: '🛒 Kitchen Staples & Oils',
-    image: 'https://images.unsplash.com/photo-1506617420156-8e4536971650?auto=format&fit=crop&w=900&q=80',
-    cta_text: '🌾 Shop Grocery Staples',
+    title: 'ROYAL PANTRY DEALS',
+    subtitle: '',
+    pill: 'Kitchen Staples',
+    starburst_text: 'Savings\nup to',
+    starburst_price: '40% OFF',
+    image: 'assets/pantry_deals_banner.jpg',
+    cta_text: 'Shop now',
     cta_link: '#groceries-heading',
-    cta_sec_text: 'View Dairy & Eggs',
-    cta_sec_cat: 'grocery',
-    badge_icon: '🍯',
-    badge_title: 'Free Shipping',
-    badge_code: 'On Orders $35+',
-    bg_gradient: 'linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #334155 100%)',
+    bg_gradient: '#FFE5D9',
     sort_order: 3,
     active: true
   }
@@ -595,7 +583,15 @@ function toggleWishlist(productId) {
   renderApp();
 }
 
-// --- 6. Calculations (Pricing, Subtotal, Shipping) ---
+// --- 6. Calculations & INR Currency Formatter ---
+function formatInr(val) {
+  if (val === null || val === undefined) return 0;
+  const num = typeof val === 'number' ? val : parseFloat(val) || 0;
+  // If value is small (< 30), scale to natural Indian Quick-commerce rupee range
+  if (num < 30) return Math.round(num * 25);
+  return Math.round(num);
+}
+
 function getCartTotals() {
   let subtotal = 0;
   let totalItemsCount = 0;
@@ -603,16 +599,16 @@ function getCartTotals() {
   for (const [productId, qty] of Object.entries(State.cart)) {
     const product = PRODUCTS.find(p => p.id === productId);
     if (product) {
-      subtotal += product.price * qty;
+      subtotal += formatInr(product.price) * qty;
       totalItemsCount += qty;
     }
   }
 
-  const freeShippingThreshold = ADMIN_SETTINGS.freeShipping || 35.00;
+  const freeShippingThreshold = formatInr(ADMIN_SETTINGS.freeShipping || 35.00);
   const isFreeShipping = subtotal >= freeShippingThreshold || subtotal === 0;
-  const shippingFee = isFreeShipping ? 0 : (ADMIN_SETTINGS.deliveryFee || 3.99);
-  const discountAmount = subtotal * State.promoDiscountPct;
-  const estimatedTax = (subtotal - discountAmount) * ((ADMIN_SETTINGS.taxRate || 5) / 100);
+  const shippingFee = isFreeShipping ? 0 : (formatInr(ADMIN_SETTINGS.deliveryFee || 3.99));
+  const discountAmount = Math.round(subtotal * State.promoDiscountPct);
+  const estimatedTax = Math.round((subtotal - discountAmount) * ((ADMIN_SETTINGS.taxRate || 5) / 100));
   const total = Math.max(0, subtotal - discountAmount + shippingFee + (subtotal > 0 ? estimatedTax : 0));
 
   return {
@@ -629,7 +625,7 @@ function getCartTotals() {
 
 // --- 7. Rendering Functions ---
 
-// Render Product Card
+// Render Product Card (Blinkit Style with 12 MINS delivery pill, ₹ pricing, and crisp + ADD button)
 function renderProductCard(product) {
   const inCartQty = State.cart[product.id] || 0;
   const isFav = State.wishlist.has(product.id);
@@ -642,6 +638,10 @@ function renderProductCard(product) {
     badgeHtml = `<span class="product-badge ${badgeClass}">${product.badge}</span>`;
   }
 
+  const inrPrice = formatInr(product.price);
+  const inrOldPrice = product.oldPrice ? formatInr(product.oldPrice) : null;
+  const savings = inrOldPrice && inrOldPrice > inrPrice ? Math.round(inrOldPrice - inrPrice) : null;
+
   const cartButtonMarkup = inCartQty > 0 
     ? `
       <div class="quantity-stepper" onclick="event.stopPropagation();">
@@ -652,7 +652,7 @@ function renderProductCard(product) {
     `
     : `
       <button class="btn-add-cart" onclick="event.stopPropagation(); addToCart('${product.id}', 1)">
-        <span>+</span> Add
+        <span>+</span> ADD
       </button>
     `;
 
@@ -677,6 +677,9 @@ function renderProductCard(product) {
       </div>
 
       <div class="card-body">
+        <div class="blinkit-delivery-tag">⚡ 12 MINS</div>
+        ${savings ? `<div class="blinkit-off-tag">₹${savings} OFF</div>` : ''}
+
         <div class="card-category-unit">
           <span class="card-category">${product.category}</span>
           <span class="card-unit">${product.unit}</span>
@@ -691,8 +694,8 @@ function renderProductCard(product) {
 
         <div class="card-footer">
           <div class="price-box">
-            <span class="current-price">$${product.price.toFixed(2)}</span>
-            ${product.oldPrice ? `<span class="regular-price">$${product.oldPrice.toFixed(2)}</span>` : ""}
+            <span class="current-price">₹${inrPrice}</span>
+            ${inrOldPrice ? `<span class="regular-price">₹${inrOldPrice}</span>` : ""}
           </div>
           ${cartButtonMarkup}
         </div>
@@ -778,7 +781,7 @@ function renderCartDrawer() {
 
   // Header Cart Button badge
   if (headerCartCount) headerCartCount.textContent = totals.totalItemsCount;
-  if (headerCartTotal) headerCartTotal.textContent = `$${totals.total.toFixed(2)}`;
+  if (headerCartTotal) headerCartTotal.textContent = `₹${totals.total}`;
   if (drawerHeaderCount) drawerHeaderCount.textContent = `${totals.totalItemsCount} items`;
 
   // Free shipping meter
@@ -790,9 +793,9 @@ function renderCartDrawer() {
       shippingMeterText.innerHTML = `🎉 You unlocked <strong>FREE Express Delivery</strong>!`;
       shippingMeterFill.style.width = "100%";
     } else {
-      const remaining = totals.freeShippingThreshold - totals.subtotal;
+      const remaining = Math.max(0, totals.freeShippingThreshold - totals.subtotal);
       const pct = Math.min(100, Math.round((totals.subtotal / totals.freeShippingThreshold) * 100));
-      shippingMeterText.innerHTML = `Add <strong>$${remaining.toFixed(2)}</strong> more for <strong>FREE Express Delivery</strong>`;
+      shippingMeterText.innerHTML = `Add <strong>₹${remaining}</strong> more for <strong>FREE Express Delivery</strong>`;
       shippingMeterFill.style.width = `${pct}%`;
     }
   }
@@ -815,13 +818,14 @@ function renderCartDrawer() {
       itemsContainer.innerHTML = cartEntries.map(([id, qty]) => {
         const prod = PRODUCTS.find(p => p.id === id);
         if (!prod) return "";
+        const itemPrice = formatInr(prod.price) * qty;
         return `
           <div class="cart-item">
             <img src="${prod.image}" alt="${prod.name}" class="cart-item-img" />
             <div class="cart-item-details">
               <h4 class="cart-item-title">${prod.name}</h4>
               <p class="cart-item-unit">${prod.unit}</p>
-              <span class="cart-item-price-unit">$${(prod.price * qty).toFixed(2)}</span>
+              <span class="cart-item-price-unit">₹${itemPrice}</span>
             </div>
             <div class="cart-item-controls">
               <button class="btn-remove-item" onclick="removeFromCart('${prod.id}')" title="Remove item">✕</button>
@@ -838,19 +842,22 @@ function renderCartDrawer() {
   }
 
   // Summary figures
-  if (drawerSubtotal) drawerSubtotal.textContent = `$${totals.subtotal.toFixed(2)}`;
-  if (drawerShipping) drawerShipping.textContent = totals.isFreeShipping ? "FREE" : `$${totals.shippingFee.toFixed(2)}`;
+  if (drawerSubtotal) drawerSubtotal.textContent = `₹${totals.subtotal}`;
+  if (drawerShipping) drawerShipping.textContent = totals.isFreeShipping ? "FREE" : `₹${totals.shippingFee}`;
   
   if (discountRow && drawerDiscount) {
     if (totals.discountAmount > 0) {
       discountRow.style.display = "flex";
-      drawerDiscount.textContent = `-$${totals.discountAmount.toFixed(2)}`;
+      drawerDiscount.textContent = `-₹${totals.discountAmount}`;
     } else {
       discountRow.style.display = "none";
     }
   }
 
-  if (drawerTotal) drawerTotal.textContent = `$${totals.total.toFixed(2)}`;
+  if (drawerTotal) drawerTotal.textContent = `₹${totals.total}`;
+
+  // Update floating cart capsule bar
+  renderFloatingCartBar();
 }
 
 // Render Wishlist badge count
@@ -861,7 +868,7 @@ function renderWishlistBadge() {
   }
 }
 
-// Render dynamic category tabs bar
+// Render dynamic Blinkit category strip with active indicator
 function renderCategoriesNav() {
   const nav = document.getElementById("categoriesNav");
   if (!nav) return;
@@ -871,16 +878,35 @@ function renderCategoriesNav() {
     .sort((a, b) => (parseInt(a.sort_order) || 0) - (parseInt(b.sort_order) || 0));
 
   let html = `
-    <button class="category-tab ${State.activeCategory === 'all' ? 'active' : ''}" data-category="all" onclick="setCategory('all')">
-      <span class="tab-icon">✨</span> All
+    <button class="blinkit-cat-item ${State.activeCategory === 'all' ? 'active' : ''}" data-category="all" onclick="setCategory('all')" title="All Products">
+      <div class="cat-item-icon-box">🧃</div>
+      <span class="cat-item-name">All</span>
     </button>
   `;
 
+  // Standard icons map for quick-commerce categories
+  const iconFallback = {
+    'vegetables': '🥦',
+    'grocery': '🛒',
+    'fruits': '🍎',
+    'dairy': '🥛',
+    'bakery': '🥖',
+    'beverages': '🥤',
+    'snacks': '🍿',
+    'navratri': '🥢',
+    'electronics': '🎧',
+    'beauty': '💄',
+    'gifting': '🎁',
+    'decor': '🪔'
+  };
+
   activeCats.forEach(cat => {
     const isAct = State.activeCategory === cat.id;
+    const catIcon = cat.icon || iconFallback[cat.id.toLowerCase()] || '📦';
     html += `
-      <button class="category-tab ${isAct ? 'active' : ''}" data-category="${cat.id}" onclick="setCategory('${cat.id}')">
-        <span class="tab-icon">${cat.icon || '📦'}</span> ${cat.name}
+      <button class="blinkit-cat-item ${isAct ? 'active' : ''}" data-category="${cat.id}" onclick="setCategory('${cat.id}')" title="${cat.name}">
+        <div class="cat-item-icon-box">${catIcon}</div>
+        <span class="cat-item-name">${cat.name}</span>
       </button>
     `;
   });
@@ -932,19 +958,17 @@ function renderHeroCarousel() {
 
   track.innerHTML = activeBanners.map((banner, idx) => {
     const isActive = idx === currentHeroSlideIndex;
-    const bg = banner.bg_gradient || 'linear-gradient(135deg, #064e3b 0%, #065f46 45%, #047857 100%)';
-    const secBtn = banner.cta_sec_text 
-      ? `<button class="btn-hero-secondary" onclick="${banner.cta_sec_cat ? `setCategory('${banner.cta_sec_cat}')` : `location.href='${banner.cta_link || '#groceries-heading'}'`}">${banner.cta_sec_text}</button>` 
-      : '';
-    const badge = (banner.badge_title || banner.badge_code) ? `
-      <div class="hero-floating-badge">
-        <div class="floating-badge-icon">${banner.badge_icon || '⚡'}</div>
-        <div class="floating-badge-text">
-          <h4>${banner.badge_title || ''}</h4>
-          <p>${banner.badge_code || ''}</p>
+    const bg = banner.bg_gradient || '#FFDD33';
+
+    if (banner.image) {
+      return `
+        <div class="hero-slide ${isActive ? 'active' : ''}" style="background: ${bg};" data-slide-index="${idx}">
+          <a href="${banner.cta_link || '#groceries-heading'}" class="hero-slide-link" aria-label="${banner.title || 'Special Offer'}">
+            <img src="${banner.image}" alt="${banner.title || 'Promotional Banner'}" class="hero-banner-img" loading="${idx === 0 ? 'eager' : 'lazy'}" onerror="this.src='assets/daily_spread_promo.jpg'" />
+          </a>
         </div>
-      </div>
-    ` : '';
+      `;
+    }
 
     return `
       <div class="hero-slide ${isActive ? 'active' : ''}" style="background: ${bg};" data-slide-index="${idx}">
@@ -954,12 +978,7 @@ function renderHeroCarousel() {
           ${banner.subtitle ? `<p class="hero-subtitle">${banner.subtitle}</p>` : ''}
           <div class="hero-cta-group">
             <a href="${banner.cta_link || '#groceries-heading'}" class="btn-hero-primary">${banner.cta_text || 'Shop Now'}</a>
-            ${secBtn}
           </div>
-        </div>
-        <div class="hero-image-wrap">
-          <img src="${banner.image}" alt="${banner.title || 'Organic groceries'}" class="hero-image" loading="${idx === 0 ? 'eager' : 'lazy'}" onerror="this.src='assets/hero_banner.jpg'" />
-          ${badge}
         </div>
       </div>
     `;
@@ -983,6 +1002,25 @@ function renderHeroCarousel() {
   if (prevBtn && nextBtn) {
     prevBtn.style.display = activeBanners.length <= 1 ? 'none' : 'flex';
     nextBtn.style.display = activeBanners.length <= 1 ? 'none' : 'flex';
+  }
+
+  // Bind touch swipe on carousel for mobile
+  const carouselWrap = document.getElementById('heroCarouselWrap');
+  if (carouselWrap && !carouselWrap.dataset.touchBound) {
+    carouselWrap.dataset.touchBound = 'true';
+    let touchStartX = 0;
+    let touchEndX = 0;
+    carouselWrap.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    carouselWrap.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      if (touchStartX - touchEndX > 45) {
+        nextHeroSlide();
+      } else if (touchEndX - touchStartX > 45) {
+        prevHeroSlide();
+      }
+    }, { passive: true });
   }
 
   startHeroCarouselTimer();
@@ -1044,6 +1082,34 @@ function startHeroCarouselTimer() {
   }, heroAutoPlayIntervalMs);
 }
 
+// Floating Blinkit "View Cart" Capsule Bar
+function renderFloatingCartBar() {
+  const bar = document.getElementById("floatingCartBar");
+  const thumb = document.getElementById("cartBarThumb");
+  const sub = document.getElementById("cartBarSub");
+  if (!bar) return;
+
+  const totals = getCartTotals();
+  if (totals.totalItemsCount === 0) {
+    bar.style.display = "none";
+    return;
+  }
+
+  // Set preview thumbnail to first product in cart
+  const firstCartId = Object.keys(State.cart)[0];
+  const firstProd = PRODUCTS.find(p => p.id === firstCartId);
+  if (thumb && firstProd) {
+    thumb.src = firstProd.image;
+    thumb.alt = firstProd.name;
+  }
+
+  if (sub) {
+    sub.textContent = `${totals.totalItemsCount} ${totals.totalItemsCount === 1 ? 'Item' : 'Items'} • ₹${totals.total}`;
+  }
+
+  bar.style.display = "flex";
+}
+
 // Overall app state refresh
 function renderApp() {
   renderHeroCarousel();
@@ -1051,6 +1117,7 @@ function renderApp() {
   renderFooterCategories();
   renderProducts();
   renderCartDrawer();
+  renderFloatingCartBar();
   renderWishlistBadge();
 }
 
@@ -1119,8 +1186,8 @@ function openQuickView(productId) {
         <span class="qv-category">${prod.category} • ${prod.unit}</span>
         <h2 class="qv-title">${prod.name}</h2>
         <div class="qv-price-row">
-          <span class="qv-price">$${prod.price.toFixed(2)}</span>
-          ${prod.oldPrice ? `<span class="qv-old-price">$${prod.oldPrice.toFixed(2)}</span>` : ""}
+          <span class="qv-price">₹${formatInr(prod.price)}</span>
+          ${prod.oldPrice ? `<span class="qv-old-price">₹${formatInr(prod.oldPrice)}</span>` : ""}
           <span class="product-badge badge-organic">${prod.badge || "Farm Fresh"}</span>
         </div>
         <p class="qv-desc">${prod.description}</p>
@@ -1147,7 +1214,7 @@ function openQuickView(productId) {
 
         <div style="display: flex; gap: 0.75rem; margin-top: auto;">
           <button class="btn-checkout" style="flex: 1;" onclick="addToCart('${prod.id}', 1); closeAllModals(); openCartDrawer();">
-            🛒 Add to Cart ($${prod.price.toFixed(2)})
+            🛒 Add to Cart (₹${formatInr(prod.price)})
           </button>
           <button class="btn-icon" style="width: 48px; height: 48px;" onclick="toggleWishlist('${prod.id}')">
             ${State.wishlist.has(prod.id) ? '❤️' : '🤍'}
@@ -1175,7 +1242,7 @@ function openCheckoutModal() {
     <button class="modal-close-btn" onclick="closeAllModals()" title="Close">✕</button>
     <div class="checkout-modal-wrap">
       <h2 class="checkout-title">Express Grocery Checkout</h2>
-      <p class="checkout-sub">Guaranteed delivery in 20-30 minutes from your local store.</p>
+      <p class="checkout-sub">Guaranteed delivery in 12–17 minutes to your doorstep.</p>
 
       <form id="checkoutForm" onsubmit="handlePlaceOrder(event)">
         <div class="form-row-2">
@@ -1185,24 +1252,24 @@ function openCheckoutModal() {
           </div>
           <div class="form-group">
             <label>Phone Number</label>
-            <input type="tel" class="form-control" id="co-phone" required placeholder="+1 (555) 234-5678" value="+1 (555) 019-2834" />
+            <input type="tel" class="form-control" id="co-phone" required placeholder="+91 98765 43210" value="+91 98765 43210" />
           </div>
         </div>
 
         <div class="form-group">
           <label>Delivery Address</label>
-          <input type="text" class="form-control" required placeholder="742 Evergreen Terrace, Apt 4B" value="742 Evergreen Terrace, Apt 4B" />
+          <input type="text" class="form-control" required placeholder="4th floor, cyber view hostel, HITEC City" value="4th floor, cyber view hostel, HITEC City" />
         </div>
 
         <div class="form-row-2">
           <div class="form-group">
             <label>Delivery Instructions (Optional)</label>
-            <input type="text" class="form-control" placeholder="Leave at door / ring bell" value="Leave on porch bench" />
+            <input type="text" class="form-control" placeholder="Leave at door / ring bell" value="Leave at security desk" />
           </div>
           <div class="form-group">
             <label>Delivery Speed</label>
             <select class="form-control">
-              <option>⚡ Priority Express (20-30 min)</option>
+              <option>⚡ Priority Express (12–17 min)</option>
               <option>Standard Delivery (Today, 6-8 PM)</option>
             </select>
           </div>
@@ -1212,11 +1279,11 @@ function openCheckoutModal() {
         <div class="payment-methods-grid">
           <div class="payment-method-card active" onclick="selectPaymentMethod(this)">
             <div class="pm-icon">💳</div>
-            <div class="pm-label">Credit / Debit</div>
+            <div class="pm-label">UPI / Cards</div>
           </div>
           <div class="payment-method-card" onclick="selectPaymentMethod(this)">
-            <div class="pm-icon">🍏</div>
-            <div class="pm-label">Apple / G-Pay</div>
+            <div class="pm-icon">📱</div>
+            <div class="pm-label">GPay / PhonePe</div>
           </div>
           <div class="payment-method-card" onclick="selectPaymentMethod(this)">
             <div class="pm-icon">💵</div>
@@ -1227,26 +1294,26 @@ function openCheckoutModal() {
         <div style="background: var(--bg-surface-alt); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.25rem;">
           <div class="summary-row" style="margin-bottom: 0.25rem;">
             <span>Items (${totals.totalItemsCount})</span>
-            <span>$${totals.subtotal.toFixed(2)}</span>
+            <span>₹${totals.subtotal}</span>
           </div>
           <div class="summary-row" style="margin-bottom: 0.25rem;">
             <span>Delivery</span>
-            <span>${totals.isFreeShipping ? 'FREE' : `$${totals.shippingFee.toFixed(2)}`}</span>
+            <span>${totals.isFreeShipping ? 'FREE' : `₹${totals.shippingFee}`}</span>
           </div>
           ${totals.discountAmount > 0 ? `
             <div class="summary-row" style="color: var(--primary-600); margin-bottom: 0.25rem;">
               <span>Promo Discount</span>
-              <span>-$${totals.discountAmount.toFixed(2)}</span>
+              <span>-₹${totals.discountAmount}</span>
             </div>
           ` : ''}
           <div class="summary-row" style="font-weight: 800; font-size: 1.1rem; color: var(--text-main); margin-top: 0.5rem; border-top: 1px dashed var(--border-light); padding-top: 0.5rem;">
             <span>Total to Pay:</span>
-            <span>$${totals.total.toFixed(2)}</span>
+            <span>₹${totals.total}</span>
           </div>
         </div>
 
         <button type="submit" class="btn-checkout" id="orderSubmitBtn">
-          Confirm & Place Order ($${totals.total.toFixed(2)})
+          Confirm & Place Order (₹${totals.total})
         </button>
       </form>
     </div>
@@ -1390,7 +1457,7 @@ function closeAllModals() {
 // --- 10. Filters & Navigation Handlers ---
 function setCategory(category) {
   State.activeCategory = category;
-  document.querySelectorAll(".category-tab").forEach(tab => {
+  document.querySelectorAll(".category-tab, .blinkit-cat-item").forEach(tab => {
     if (tab.dataset.category === category) {
       tab.classList.add("active");
     } else {
@@ -1419,7 +1486,7 @@ function resetFilters() {
   const searchInput = document.getElementById("searchInput");
   if (searchInput) searchInput.value = "";
   
-  document.querySelectorAll(".category-tab").forEach(tab => {
+  document.querySelectorAll(".category-tab, .blinkit-cat-item").forEach(tab => {
     tab.classList.toggle("active", tab.dataset.category === "all");
   });
   document.querySelectorAll(".tag-filter-btn").forEach(btn => {
@@ -1446,10 +1513,146 @@ function showToast(message, icon = "🛒") {
   }, 2400);
 }
 
+// --- 11b. Blinkit Mobile Interactive Features ---
+
+// Rotating Search Placeholder (Matching "wedding props", "dandiya", etc.)
+const SEARCH_PROMPTS = [
+  'Search "wedding props"',
+  'Search "fresh vegetables"',
+  'Search "pooja thali & flowers"',
+  'Search "dandiya sticks"',
+  'Search "organic milk & ghee"',
+  'Search "alphonso mangoes"',
+  'Search "daily farm bread"'
+];
+let searchPromptIndex = 0;
+let searchPromptTimer = null;
+
+function startSearchPlaceholderRotation() {
+  const input = document.getElementById("searchInput");
+  if (!input) return;
+  if (searchPromptTimer) clearInterval(searchPromptTimer);
+  searchPromptTimer = setInterval(() => {
+    if (document.activeElement !== input && !input.value) {
+      searchPromptIndex = (searchPromptIndex + 1) % SEARCH_PROMPTS.length;
+      input.setAttribute("placeholder", SEARCH_PROMPTS[searchPromptIndex]);
+    }
+  }, 3500);
+}
+
+// Voice Search Support
+function triggerVoiceSearch() {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRec) {
+    try {
+      const recognition = new SpeechRec();
+      recognition.lang = 'en-IN';
+      recognition.onstart = () => showToast("Listening... Speak now", "🎙️");
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        const searchInput = document.getElementById("searchInput");
+        if (searchInput) {
+          searchInput.value = transcript;
+          State.searchQuery = transcript;
+          renderProducts();
+          showToast(`Searching for "${transcript}"`, "🔍");
+        }
+      };
+      recognition.onerror = () => showToast("Type to search", "🎙️");
+      recognition.start();
+      return;
+    } catch (e) {}
+  }
+  showToast("Voice search: Speak or type in search box", "🎙️");
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput) searchInput.focus();
+}
+
+// Address Selection Modal
+function openAddressModal() {
+  const modal = document.getElementById("addressModal");
+  if (modal) modal.style.display = "flex";
+}
+
+function closeAddressModal() {
+  const modal = document.getElementById("addressModal");
+  if (modal) modal.style.display = "none";
+}
+
+function selectAddress(tag, subText) {
+  const tagEl = document.getElementById("currentAddressTag");
+  const subEl = document.getElementById("currentAddressSub");
+  if (tagEl) tagEl.textContent = tag;
+  if (subEl) subEl.textContent = `- ${subText}`;
+
+  document.querySelectorAll(".address-option").forEach(opt => {
+    opt.classList.remove("active");
+    const radio = opt.querySelector(".addr-radio");
+    if (radio) radio.textContent = "○";
+  });
+
+  if (window.event && window.event.currentTarget) {
+    const activeOpt = window.event.currentTarget;
+    activeOpt.classList.add("active");
+    const radio = activeOpt.querySelector(".addr-radio");
+    if (radio) radio.textContent = "●";
+  }
+
+  closeAddressModal();
+  showToast(`Delivery location set to: ${tag}`, "📍");
+}
+
+// Order Again Modal
+function openOrderAgainModal() {
+  const modal = document.getElementById("orderAgainModal");
+  const list = document.getElementById("orderAgainList");
+  if (!modal) return;
+
+  if (list) {
+    // Pick 5 top products to display
+    const items = PRODUCTS.slice(0, 5);
+    list.innerHTML = items.map(prod => `
+      <div class="order-again-item">
+        <img src="${prod.image}" alt="${prod.name}" class="order-again-img" />
+        <div class="order-again-info">
+          <div class="order-again-name">${prod.name}</div>
+          <div class="order-again-price">₹${formatInr(prod.price)} • ${prod.unit}</div>
+        </div>
+        <button class="btn-add-cart" onclick="addToCart('${prod.id}', 1); closeOrderAgainModal();">
+          + ADD
+        </button>
+      </div>
+    `).join('');
+  }
+
+  modal.style.display = "flex";
+}
+
+function closeOrderAgainModal() {
+  const modal = document.getElementById("orderAgainModal");
+  if (modal) modal.style.display = "none";
+}
+
+// Bottom App Navigation Dock Handlers
+function switchNavTab(tab) {
+  document.querySelectorAll(".bottom-app-nav .nav-tab").forEach(t => t.classList.remove("active"));
+  const tabHome = document.getElementById("navTabHome");
+  if (tab === 'home') {
+    if (tabHome) tabHome.classList.add("active");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function scrollToCategories() {
+  const el = document.getElementById("categoriesNav") || document.getElementById("groceries-heading");
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
 // --- 12. Initialization & Event Listeners ---
 document.addEventListener('DOMContentLoaded', async () => {
   // 1. Load cart / wishlist / theme from localStorage (user-specific, stays local)
   loadPersistedState();
+  startSearchPlaceholderRotation();
 
   // 2. Show skeleton loading state in products grid
   const gridEl = document.getElementById('productsGrid');
